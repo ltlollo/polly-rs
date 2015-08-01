@@ -1,6 +1,6 @@
 [root]
-name = "polly-rs"
-version = "0.1.0"
+name = "polly"
+version = "1.0.0"
 dependencies = [
  "docopt 0.6.69 (registry+https://github.com/rust-lang/crates.io-index)",
  "docopt_macros 0.6.69 (registry+https://github.com/rust-lang/crates.io-index)",

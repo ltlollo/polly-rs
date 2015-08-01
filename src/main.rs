@@ -17,8 +17,8 @@ enum Format { PNG, JPEG, GIF, WEBP, PPM, TIFF, TGA, BMP }
 
 docopt!(Args, "
 Usage:
-    polly-rs [-i INPUT] -x FORMAT [ -o OUTPUT] [-p] <SIZE>
-    polly-rs (-h | --help)
+    polly [-i INPUT] -x FORMAT [ -o OUTPUT] [-p] <SIZE>
+    polly (-h | --help)
 
 Options:
     -h, --help      Show this message

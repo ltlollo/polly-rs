@@ -1,6 +1,6 @@
 [package]
-name = "polly-rs"
-version = "0.1.0"
+name = "polly"
+version = "1.0.0"
 authors = ["ltlollo <ltlollo.it@gmail.com>"]
 
 [dependencies]
