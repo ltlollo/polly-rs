@@ -68,22 +68,21 @@ fn main() {
             //NOTE: a little bit of contrast wouldn't hurt
             buf.to_luma()
         };
-        println!("P5 {} {} {}", nw, nh, HI as u8);
+        print!("P5 {} {} {}", nw, nh, HI as u8);
         for (x, _, px) in gray.enumerate_pixels() {
             if x == 0 {
                 println!("");
-            } else {
-                let col = if args.flag_p {
-                    INV - px.data[0] as f64
-                } else {
-                    px.data[0] as f64
-                };
-                let ch = if col                >= 123.0 { HI }
-                    else if col < 123.0 && col >= 98.0  { HM }
-                    else if col <  98.0 && col >= 68.0  { LM }
-                    else                                { LO };
-                print!("{}", ch);
             }
+            let col = if args.flag_p {
+                INV - px.data[0] as f64
+            } else {
+                px.data[0] as f64
+            };
+            let ch = if col                >= 123.0 { HI }
+                else if col < 123.0 && col >= 98.0  { HM }
+                else if col <  98.0 && col >= 68.0  { LM }
+                else                                { LO };
+            print!("{}", ch);
         }
         println!("");
     } else {
