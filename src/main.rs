@@ -64,6 +64,9 @@ fn main() {
         let nw : u32; let nh: u32;
         let gray = {
             let img = image::load(qin.file, format).unwrap();
+            if img.height() == 0 || img.width() == 0 {
+                panic!("image to small");
+            }
             nw = args.arg_SIZE + 1;
             nh = (nw as f64*(img.height() as f64/img.width() as f64)) as u32;
             let buf = img.resize_exact(nw, nh, Lanczos3);
