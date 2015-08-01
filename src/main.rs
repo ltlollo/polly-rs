@@ -64,7 +64,7 @@ fn main() {
             let img = image::load(qin.file, format).unwrap();
             nw = args.arg_SIZE + 1;
             nh = (nw as f64*(img.height() as f64/img.width() as f64)) as u32;
-            let buf = img.resize(nw, nh, Lanczos3);
+            let buf = img.resize_exact(nw, nh, Lanczos3);
             //NOTE: a little bit of contrast wouldn't hurt
             buf.to_luma()
         };
