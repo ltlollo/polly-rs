@@ -1,6 +1,6 @@
 use libc::funcs::posix88::fcntl::open;
 use libc::funcs::posix88::unistd::dup2;
-use libc::consts::os::posix88::{ O_RDONLY, O_WRONLY, O_CREAT };
+use libc::consts::os::posix88::{ O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC };
 use std::io::{ Error, Result };
 use std::os::unix::io::{ AsRawFd, RawFd, FromRawFd };
 use std::os::unix::fs::PermissionsExt;
@@ -76,12 +76,12 @@ impl Reopen for Stdin {
 
 impl Reopen for Stdout {
     fn reopen(&mut self, path: &String) -> Result<()> {
-        self.oreopen(path, O_WRONLY|O_CREAT)
+        self.oreopen(path, O_WRONLY|O_CREAT|O_TRUNC)
     }
 }
 
 impl Reopen for Stderr {
     fn reopen(&mut self, path: &String) -> Result<()> {
-        self.oreopen(path, O_WRONLY|O_CREAT)
+        self.oreopen(path, O_WRONLY|O_CREAT|O_TRUNC)
     }
 }
