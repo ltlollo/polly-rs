@@ -1,10 +1,10 @@
 use libc::funcs::posix88::fcntl::open;
 use libc::funcs::posix88::unistd::dup2;
 use libc::consts::os::posix88::{ O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC };
+use libc::consts::os::posix88::{ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
 use std::io::{ Error, Result };
 use std::os::unix::io::{ AsRawFd, RawFd, FromRawFd };
-use std::os::unix::fs::PermissionsExt;
-use std::os::unix::fs::MetadataExt;
+use std::os::unix::fs::{ MetadataExt, PermissionsExt };
 use std::fs::{ File, Metadata };
 use std::ffi::CString;
 
@@ -12,9 +12,9 @@ pub struct Stdin  { pub file: File }
 pub struct Stdout { pub file: File }
 pub struct Stderr { pub file: File }
 
-impl  AsRawFd for Stdin  { fn as_raw_fd(&self) -> RawFd { 0 } }
-impl  AsRawFd for Stdout { fn as_raw_fd(&self) -> RawFd { 1 } }
-impl  AsRawFd for Stderr { fn as_raw_fd(&self) -> RawFd { 2 } }
+impl AsRawFd for Stdin  { fn as_raw_fd(&self) -> RawFd { STDIN_FILENO  } }
+impl AsRawFd for Stdout { fn as_raw_fd(&self) -> RawFd { STDOUT_FILENO } }
+impl AsRawFd for Stderr { fn as_raw_fd(&self) -> RawFd { STDERR_FILENO } }
 
 trait FileInfo { fn metadata(&self) -> Result<Metadata>; }
 
@@ -31,13 +31,19 @@ impl FileInfo for Stderr {
 }
 
 impl Stdin {
-    pub fn own() -> Stdin  { unsafe { Stdin  { file: File::from_raw_fd(0) } } }
+    pub fn own() -> Stdin {
+        unsafe { Stdin  { file: File::from_raw_fd(STDIN_FILENO) } }
+    }
 }
 impl Stdout {
-    pub fn own() -> Stdout { unsafe { Stdout { file: File::from_raw_fd(1) } } }
+    pub fn own() -> Stdout {
+        unsafe { Stdout { file: File::from_raw_fd(STDOUT_FILENO) } }
+    }
 }
 impl Stderr {
-    pub fn own() -> Stderr { unsafe { Stderr { file: File::from_raw_fd(2) } } }
+    pub fn own() -> Stderr {
+        unsafe { Stderr { file: File::from_raw_fd(STDERR_FILENO) } }
+    }
 }
 
 impl FileInfo for File {
