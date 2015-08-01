@@ -23,7 +23,7 @@ Options:
     -h, --help      Show this message
     -i INPUT        Input file (default stdin)
     -o OUTPUT       Output file (default stdout)
-    -x FORMAT       Input format
+    -x FORMAT       Input format (eg: png)
     -p              Invert the colors",
 flag_i: Option<String>,
 flag_o: Option<String>,
@@ -32,6 +32,7 @@ flag_p: bool,
 flag_h: bool,
 flag_v: bool,
 arg_SIZE: u32);
+
 const LO : char = 32  as char;
 const LM : char = 46  as char;
 const HM : char = 58  as char;
