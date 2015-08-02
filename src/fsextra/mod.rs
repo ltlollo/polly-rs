@@ -2,11 +2,15 @@ use libc::funcs::posix88::fcntl::open;
 use libc::funcs::posix88::unistd::dup2;
 use libc::consts::os::posix88::{ O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC };
 use libc::consts::os::posix88::{ STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
-use std::io::{ Error, Result };
+use libc::funcs::c95::stdlib::exit;
+use libc::consts::os::c95::EXIT_FAILURE;
+
+use std::io::{ Error, Result, Write };
 use std::os::unix::io::{ AsRawFd, RawFd, FromRawFd };
 use std::os::unix::fs::{ MetadataExt, PermissionsExt };
 use std::fs::{ File, Metadata };
 use std::ffi::CString;
+use std::fmt::Display;
 
 pub struct Stdin  { pub file: File }
 pub struct Stdout { pub file: File }
@@ -90,4 +94,11 @@ impl Reopen for Stderr {
     fn reopen(&mut self, path: &String) -> Result<()> {
         self.oreopen(path, O_WRONLY|O_CREAT|O_TRUNC)
     }
+}
+
+pub fn fail<T: Display>(msg: T) ->! {
+    let mut f = Stderr::own().file;
+    writeln!(f, "{}", msg).unwrap_or(());
+    f.flush().unwrap_or(());
+    unsafe { exit(EXIT_FAILURE); }
 }

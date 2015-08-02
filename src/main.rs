@@ -7,7 +7,7 @@ extern crate libc;
 extern crate image;
 
 mod fsextra;
-use fsextra::{ Stdin, Stdout, Reopen };
+use fsextra::{ Stdin, Stdout, Reopen, fail };
 
 use image::*;
 use std::io::Write;
@@ -45,10 +45,10 @@ fn main() {
     let mut qin = Stdin::own();
     let mut qout = Stdout::own();
     if let Some(ref input) = args.flag_i {
-        qin.reopen(input).unwrap();
+        qin.reopen(input).unwrap_or_else(|e| fail(e));
     }
     if let Some(ref output) = args.flag_o {
-        qout.reopen(output).unwrap();
+        qout.reopen(output).unwrap_or_else(|e| fail(e));
     }
     let format = match args.flag_x {
         Format::PNG  => ImageFormat::PNG,
@@ -63,9 +63,10 @@ fn main() {
     if args.arg_SIZE != 0 {
         let nw : u32; let nh: u32;
         let gray = {
-            let img = image::load(qin.file, format).unwrap();
+            let img = image::load(qin.file, format)
+                .unwrap_or_else(|e| fail(e));
             if img.height() == 0 || img.width() == 0 {
-                panic!("image to small");
+                fail("image to small");
             }
             nw = args.arg_SIZE + 1;
             nh = (nw as f64*(img.height() as f64/img.width() as f64)) as u32;
@@ -73,7 +74,8 @@ fn main() {
             //NOTE: a little bit of contrast wouldn't hurt
             buf.to_luma()
         };
-        write!(qout.file, "P5 {} {} {}", nw, nh, HI as u8).unwrap();
+        write!(qout.file, "P5 {} {} {}", nw, nh, HI as u8)
+            .unwrap_or_else(|e| fail(e));
         for (x, _, px) in gray.enumerate_pixels() {
             let ch = if x == 0 {
                 '\n'
@@ -87,12 +89,11 @@ fn main() {
                 else if col < 123.0 && col >= 98.0  { HM }
                 else if col <  98.0 && col >= 68.0  { LM }
                 else                                { LO }
-
             };
-            write!(qout.file, "{}", ch).unwrap();
+            write!(qout.file, "{}", ch).unwrap_or_else(|e| fail(e));
         }
-        write!(qout.file, "\n").unwrap();
+        write!(qout.file, "\n").unwrap_or_else(|e| fail(e));
     } else {
-        panic!("SIZE cannot be 0");
+        fail("SIZE cannot be 0");
     }
 }
