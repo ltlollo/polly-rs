@@ -7,13 +7,22 @@ extern crate libc;
 extern crate image;
 
 mod fsextra;
-use fsextra::{ Stdin, Stdout, Reopen, fail };
+use fsextra::{Stdin, Stdout, Reopen, fail};
 
 use image::*;
 use std::io::Write;
 
 #[derive(Debug, RustcDecodable)]
-enum Format { PNG, JPEG, GIF, WEBP, PPM, TIFF, TGA, BMP }
+enum Format {
+    PNG,
+    JPEG,
+    GIF,
+    WEBP,
+    PPM,
+    TIFF,
+    TGA,
+    BMP,
+}
 
 docopt!(Args, "
 Usage:
@@ -38,7 +47,7 @@ const LO : char = 32  as char;
 const LM : char = 46  as char;
 const HM : char = 58  as char;
 const HI : char = 120 as char;
-const INV : f64 = (HI as u8 - LO as u8) as f64/HI as u8 as f64 * 255.0;
+const INV : f64 = (HI as u8 - LO as u8) as f64 / HI as u8 as f64 * 255.0;
 
 fn main() {
     let args: Args = Args::docopt().decode().unwrap_or_else(|e| e.exit());
@@ -61,7 +70,8 @@ fn main() {
         Format::BMP  => ImageFormat::BMP,
     };
     if args.arg_SIZE != 0 {
-        let nw : u32; let nh: u32;
+        let nw : u32;
+        let nh: u32;
         let gray = {
             let img = image::load(qin.file, format)
                 .unwrap_or_else(|e| fail(e));
@@ -85,10 +95,15 @@ fn main() {
                 } else {
                     px.data[0] as f64
                 };
-                if      col                >= 123.0 { HI }
-                else if col < 123.0 && col >= 98.0  { HM }
-                else if col <  98.0 && col >= 68.0  { LM }
-                else                                { LO }
+                if col >= 123.0 {
+                    HI
+                } else if col < 123.0 && col >= 98.0 {
+                    HM
+                } else if col < 98.0 && col >= 68.0 {
+                    LM
+                } else {
+                    LO
+                }
             };
             write!(qout.file, "{}", ch).unwrap_or_else(|e| fail(e));
         }
