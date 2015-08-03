@@ -10,7 +10,6 @@ use std::io::{Error, Result, Write};
 use std::os::unix::io::{AsRawFd, RawFd, FromRawFd};
 use std::os::unix::fs::{MetadataExt, PermissionsExt};
 use std::fs::{File, Metadata};
-use std::ffi::CString;
 use std::fmt::Display;
 
 pub struct Stdin {
@@ -88,10 +87,9 @@ trait ReopenMode {
 impl<T> ReopenMode for T where T : AsRawFd + FileInfo {
     fn oreopen(&mut self, path: &String, mode: i32) -> Result<()> {
         let fd = self.as_raw_fd();
-        let cpath = CString::new(&path[..]).unwrap();
         let metadata = try!(self.metadata());
         let file = unsafe {
-            open(cpath.as_ptr(), mode, metadata.mode())
+            open(path.as_ptr() as *const i8, mode, metadata.mode())
         };
         if file == -1 {
             return Err(Error::last_os_error());
