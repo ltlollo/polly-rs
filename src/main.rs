@@ -26,22 +26,24 @@ enum Format {
 
 docopt!(Args, "
 Usage:
-    polly [-i INPUT] -x FORMAT [ -o OUTPUT] [-p] <SIZE>
+    polly [-i INPUT] -x FORMAT [ -o OUTPUT] [-H HEIGHT] [-p] <WIDTH>
     polly (-h | --help)
 
 Options:
     -h, --help      Show this message
+    -H HEIGHT       Height (default: scaled)
     -i INPUT        Input file (default stdin)
     -o OUTPUT       Output file (default stdout)
     -x FORMAT       Input format (eg: png)
     -p              Invert the colors",
 flag_i: Option<String>,
 flag_o: Option<String>,
+flag_H: Option<u32>,
 flag_x: Format,
 flag_p: bool,
 flag_h: bool,
 flag_v: bool,
-arg_SIZE: u32);
+arg_WIDTH: u32);
 
 const LO : char = 32  as char;
 const LM : char = 46  as char;
@@ -69,46 +71,53 @@ fn main() {
         Format::TGA  => ImageFormat::TGA,
         Format::BMP  => ImageFormat::BMP,
     };
-    if args.arg_SIZE != 0 {
-        let nw : u32;
-        let nh: u32;
-        let gray = {
-            let img = image::load(qin.file, format)
-                .unwrap_or_else(|e| fail(e));
-            if img.height() == 0 || img.width() == 0 {
-                fail("image to small");
-            }
-            nw = args.arg_SIZE + 1;
-            nh = (nw as f64*(img.height() as f64/img.width() as f64)) as u32;
-            let buf = img.resize_exact(nw, nh, Lanczos3);
-            //NOTE: a little bit of contrast wouldn't hurt
-            buf.to_luma()
-        };
-        write!(qout.file, "P5 {} {} {}", nw, nh, HI as u8)
-            .unwrap_or_else(|e| fail(e));
-        for (x, _, px) in gray.enumerate_pixels() {
-            let ch = if x == 0 {
-                '\n'
-            } else {
-                let col = if args.flag_p {
-                    INV - px.data[0] as f64
-                } else {
-                    px.data[0] as f64
-                };
-                if col >= 123.0 {
-                    HI
-                } else if col < 123.0 && col >= 98.0 {
-                    HM
-                } else if col < 98.0 && col >= 68.0 {
-                    LM
-                } else {
-                    LO
-                }
-            };
-            write!(qout.file, "{}", ch).unwrap_or_else(|e| fail(e));
+    if let Some(h) = args.flag_H {
+        if h == 0 {
+            fail("HEIGHT cannot be 0");
         }
-        write!(qout.file, "\n").unwrap_or_else(|e| fail(e));
-    } else {
-        fail("SIZE cannot be 0");
     }
+    if args.arg_WIDTH == 0 {
+        fail("WIDTH cannot be 0");
+    }
+    let nw : u32;
+    let nh: u32;
+    let gray = {
+        let img = image::load(qin.file, format)
+            .unwrap_or_else(|e| fail(e));
+        if img.height() == 0 || img.width() == 0 {
+            fail("image to small");
+        }
+        nw = args.arg_WIDTH + 1;
+        nh = match args.flag_H {
+            Some(h) => h,
+            None => (nw as f64*(img.height() as f64/img.width() as f64)) as u32
+        };
+        let buf = img.resize_exact(nw, nh, Lanczos3);
+        //NOTE: a little bit of contrast wouldn't hurt
+        buf.to_luma()
+    };
+    write!(qout.file, "P5 {} {} {}", nw, nh, HI as u8)
+        .unwrap_or_else(|e| fail(e));
+    for (x, _, px) in gray.enumerate_pixels() {
+        let ch = if x == 0 {
+            '\n'
+        } else {
+            let col = if args.flag_p {
+                INV - px.data[0] as f64
+            } else {
+                px.data[0] as f64
+            };
+            if col >= 123.0 {
+                HI
+            } else if col < 123.0 && col >= 98.0 {
+                HM
+            } else if col < 98.0 && col >= 68.0 {
+                LM
+            } else {
+                LO
+            }
+        };
+        write!(qout.file, "{}", ch).unwrap_or_else(|e| fail(e));
+    }
+    write!(qout.file, "\n").unwrap_or_else(|e| fail(e));
 }

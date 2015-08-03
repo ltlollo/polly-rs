@@ -1,6 +1,6 @@
 [package]
 name = "polly"
-version = "1.0.2"
+version = "1.0.3"
 license = "MIT"
 description = "ASCII/PGM polyglot maker"
 authors = ["ltlollo <ltlollo.it@gmail.com>"]
