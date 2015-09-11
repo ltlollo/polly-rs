@@ -55,23 +55,17 @@ impl FileInfo for Stderr {
 
 impl Stdin {
     pub fn own() -> Stdin {
-        unsafe {
-            Stdin { file: File::from_raw_fd(STDIN_FILENO) }
-        }
+        unsafe { Stdin { file: File::from_raw_fd(STDIN_FILENO) } }
     }
 }
 impl Stdout {
     pub fn own() -> Stdout {
-        unsafe {
-            Stdout { file: File::from_raw_fd(STDOUT_FILENO) }
-        }
+        unsafe { Stdout { file: File::from_raw_fd(STDOUT_FILENO) } }
     }
 }
 impl Stderr {
     pub fn own() -> Stderr {
-        unsafe {
-            Stderr { file: File::from_raw_fd(STDERR_FILENO) }
-        }
+        unsafe { Stderr { file: File::from_raw_fd(STDERR_FILENO) } }
     }
 }
 
@@ -90,15 +84,11 @@ impl<T> ReopenMode for T where T : AsRawFd + FileInfo {
         let fd = self.as_raw_fd();
         let metadata = try!(self.metadata());
         let cpath = CString::new(&path[..]).unwrap();
-        let file = unsafe {
-            open(cpath.as_ptr(), mode, metadata.mode())
-        };
+        let file = unsafe { open(cpath.as_ptr(), mode, metadata.mode()) };
         if file == -1 {
             return Err(Error::last_os_error());
         }
-        if unsafe {
-            dup2(file, fd) == -1
-        } {
+        if unsafe { dup2(file, fd) == -1 } {
             return Err(Error::last_os_error());
         }
         Ok(())
@@ -117,13 +107,13 @@ impl Reopen for Stdin {
 
 impl Reopen for Stdout {
     fn reopen(&mut self, path: &String) -> Result<()> {
-        self.oreopen(path, O_WRONLY|O_CREAT|O_TRUNC)
+        self.oreopen(path, O_WRONLY | O_CREAT | O_TRUNC)
     }
 }
 
 impl Reopen for Stderr {
     fn reopen(&mut self, path: &String) -> Result<()> {
-        self.oreopen(path, O_WRONLY|O_CREAT|O_TRUNC)
+        self.oreopen(path, O_WRONLY | O_CREAT | O_TRUNC)
     }
 }
 

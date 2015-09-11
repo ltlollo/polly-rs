@@ -62,14 +62,14 @@ fn main() {
         qout.reopen(output).unwrap_or_else(|e| fail(e));
     }
     let format = match args.flag_x {
-        Format::PNG  => ImageFormat::PNG,
+        Format::PNG => ImageFormat::PNG,
         Format::JPEG => ImageFormat::JPEG,
-        Format::GIF  => ImageFormat::GIF,
+        Format::GIF => ImageFormat::GIF,
         Format::WEBP => ImageFormat::WEBP,
-        Format::PPM  => ImageFormat::PPM,
+        Format::PPM => ImageFormat::PPM,
         Format::TIFF => ImageFormat::TIFF,
-        Format::TGA  => ImageFormat::TGA,
-        Format::BMP  => ImageFormat::BMP,
+        Format::TGA => ImageFormat::TGA,
+        Format::BMP => ImageFormat::BMP,
     };
     if let Some(h) = args.flag_H {
         if h == 0 {
@@ -79,18 +79,17 @@ fn main() {
     if args.arg_WIDTH == 0 {
         fail("WIDTH cannot be 0");
     }
-    let nw : u32;
+    let nw: u32;
     let nh: u32;
     let gray = {
-        let img = image::load(qin.file, format)
-            .unwrap_or_else(|e| fail(e));
+        let img = image::load(qin.file, format).unwrap_or_else(|e| fail(e));
         if img.height() == 0 || img.width() == 0 {
             fail("image to small");
         }
         nw = args.arg_WIDTH + 1;
         nh = match args.flag_H {
             Some(h) => h,
-            None => (nw as f64*(img.height() as f64/img.width() as f64)) as u32
+            None => (nw as f64*(img.height() as f64/img.width() as f64)) as u32,
         };
         let buf = img.resize_exact(nw, nh, Lanczos3);
         //NOTE: a little bit of contrast wouldn't hurt
