@@ -45,11 +45,11 @@ flag_h: bool,
 flag_v: bool,
 arg_WIDTH: u32);
 
-const LO : char = 32  as char;
-const LM : char = 46  as char;
-const HM : char = 58  as char;
-const HI : char = 120 as char;
-const INV : f64 = (HI as u8 - LO as u8) as f64 / HI as u8 as f64 * 255.0;
+const LO: char = 32 as char;
+const LM: char = 46 as char;
+const HM: char = 58 as char;
+const HI: char = 120 as char;
+const INV: f64 = (HI as u8 - LO as u8) as f64 / HI as u8 as f64 * 255.0;
 
 fn main() {
     let args: Args = Args::docopt().decode().unwrap_or_else(|e| e.exit());
@@ -89,14 +89,13 @@ fn main() {
         nw = args.arg_WIDTH + 1;
         nh = match args.flag_H {
             Some(h) => h,
-            None => (nw as f64*(img.height() as f64/img.width() as f64)) as u32,
+            None => (nw as f64 * (img.height() as f64 / img.width() as f64)) as u32,
         };
         let buf = img.resize_exact(nw, nh, Lanczos3);
-        //NOTE: a little bit of contrast wouldn't hurt
+        // NOTE: a little bit of contrast wouldn't hurt
         buf.to_luma()
     };
-    write!(qout.file, "P5 {} {} {}", nw, nh, HI as u8)
-        .unwrap_or_else(|e| fail(e));
+    write!(qout.file, "P5 {} {} {}", nw, nh, HI as u8).unwrap_or_else(|e| fail(e));
     for (x, _, px) in gray.enumerate_pixels() {
         let ch = if x == 0 {
             '\n'

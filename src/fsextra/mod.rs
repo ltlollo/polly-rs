@@ -1,10 +1,10 @@
 
-use libc::funcs::posix88::fcntl::open;
-use libc::funcs::posix88::unistd::dup2;
-use libc::consts::os::posix88::{O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC};
-use libc::consts::os::posix88::{STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
-use libc::funcs::c95::stdlib::exit;
-use libc::consts::os::c95::EXIT_FAILURE;
+use libc::open;
+use libc::dup2;
+use libc::{O_RDONLY, O_WRONLY, O_CREAT, O_TRUNC};
+use libc::{STDIN_FILENO, STDOUT_FILENO, STDERR_FILENO};
+use libc::exit;
+use libc::EXIT_FAILURE;
 
 use std::io::{Error, Result, Write};
 use std::os::unix::io::{AsRawFd, RawFd, FromRawFd};
@@ -23,17 +23,24 @@ pub struct Stderr {
     pub file: File,
 }
 
-impl AsRawFd for Stdin  {    fn as_raw_fd(&self) -> RawFd {
+impl AsRawFd for Stdin {
+    fn as_raw_fd(&self) -> RawFd {
         STDIN_FILENO
-    } }
-impl AsRawFd for Stdout {    fn as_raw_fd(&self) -> RawFd {
+    }
+}
+impl AsRawFd for Stdout {
+    fn as_raw_fd(&self) -> RawFd {
         STDOUT_FILENO
-    } }
-impl AsRawFd for Stderr {    fn as_raw_fd(&self) -> RawFd {
+    }
+}
+impl AsRawFd for Stderr {
+    fn as_raw_fd(&self) -> RawFd {
         STDERR_FILENO
-    } }
+    }
+}
 
-trait FileInfo {    fn metadata(&self) -> Result<Metadata>; }
+pub trait FileInfo {
+    fn metadata(&self) -> Result<Metadata>; }
 
 impl FileInfo for Stdin {
     fn metadata(&self) -> Result<Metadata> {
@@ -75,11 +82,12 @@ impl FileInfo for File {
     }
 }
 
-trait ReopenMode {
+pub trait ReopenMode {
     fn oreopen(&mut self, path: &String, mode: i32) -> Result<()>;
 }
 
-impl<T> ReopenMode for T where T : AsRawFd + FileInfo {
+impl<T> ReopenMode for T where T: AsRawFd + FileInfo
+{
     fn oreopen(&mut self, path: &String, mode: i32) -> Result<()> {
         let fd = self.as_raw_fd();
         let metadata = try!(self.metadata());
