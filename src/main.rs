@@ -55,6 +55,7 @@ fn main() {
     let args: Args = Args::docopt().decode().unwrap_or_else(|e| e.exit());
     let mut qin = Stdin::own();
     let mut qout = Stdout::own();
+
     if let Some(ref input) = args.flag_i {
         qin.reopen(input).unwrap_or_else(|e| fail(e));
     }
