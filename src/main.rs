@@ -24,26 +24,31 @@ enum Format {
     BMP,
 }
 
-docopt!(Args, "
+docopt!(Args,
+        "
 Usage:
     polly [-i INPUT] -x FORMAT [ -o OUTPUT] [-H HEIGHT] [-p] <WIDTH>
-    polly (-h | --help)
+    polly \
+         (-h | --help)
 
 Options:
     -h, --help      Show this message
-    -H HEIGHT       Height (default: scaled)
+    -H HEIGHT       \
+         Height (default: scaled)
     -i INPUT        Input file (default stdin)
-    -o OUTPUT       Output file (default stdout)
+    -o OUTPUT       \
+         Output file (default stdout)
     -x FORMAT       Input format (eg: png)
-    -p              Invert the colors",
-flag_i: Option<String>,
-flag_o: Option<String>,
-flag_H: Option<u32>,
-flag_x: Format,
-flag_p: bool,
-flag_h: bool,
-flag_v: bool,
-arg_WIDTH: u32);
+    -p              \
+         Invert the colors",
+        flag_i: Option<String>,
+        flag_o: Option<String>,
+        flag_H: Option<u32>,
+        flag_x: Format,
+        flag_p: bool,
+        flag_h: bool,
+        flag_v: bool,
+        arg_WIDTH: u32);
 
 const LO: char = 32 as char;
 const LM: char = 46 as char;

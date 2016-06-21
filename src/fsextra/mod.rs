@@ -8,7 +8,7 @@ use libc::EXIT_FAILURE;
 
 use std::io::{Error, Result, Write};
 use std::os::unix::io::{AsRawFd, RawFd, FromRawFd};
-use std::os::unix::fs::{MetadataExt, PermissionsExt};
+use std::os::unix::fs::{MetadataExt};
 use std::fs::{File, Metadata};
 use std::fmt::Display;
 use std::ffi::CString;
@@ -40,7 +40,8 @@ impl AsRawFd for Stderr {
 }
 
 pub trait FileInfo {
-    fn metadata(&self) -> Result<Metadata>; }
+    fn metadata(&self) -> Result<Metadata>;
+}
 
 impl FileInfo for Stdin {
     fn metadata(&self) -> Result<Metadata> {
@@ -86,7 +87,8 @@ pub trait ReopenMode {
     fn oreopen(&mut self, path: &String, mode: i32) -> Result<()>;
 }
 
-impl<T> ReopenMode for T where T: AsRawFd + FileInfo
+impl<T> ReopenMode for T
+    where T: AsRawFd + FileInfo
 {
     fn oreopen(&mut self, path: &String, mode: i32) -> Result<()> {
         let fd = self.as_raw_fd();
@@ -103,7 +105,7 @@ impl<T> ReopenMode for T where T: AsRawFd + FileInfo
     }
 }
 
-pub trait Reopen : ReopenMode {
+pub trait Reopen: ReopenMode {
     fn reopen(&mut self, path: &String) -> Result<()>;
 }
 
